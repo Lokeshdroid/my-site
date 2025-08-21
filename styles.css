@@ -1,0 +1,15 @@
+.input {
+  @apply rounded-2xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500;
+}
+.btn-primary {
+  @apply inline-flex items-center rounded-2xl bg-indigo-600 px-4 py-2 text-white shadow hover:bg-indigo-700;
+}
+.btn-secondary {
+  @apply inline-flex items-center rounded-2xl bg-slate-800 px-4 py-2 text-white shadow hover:bg-slate-900;
+}
+.link-pill {
+  @apply truncate rounded-xl border border-slate-200 px-3 py-2 text-xs hover:bg-slate-50;
+}
+.badge {
+  @apply inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-[10px] font-medium text-slate-700;
+}
