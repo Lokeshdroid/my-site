@@ -12,6 +12,42 @@
         lastWasEmpty: false,
     };
 
+    // Dark mode functionality
+    function initDarkMode() {
+        // Always start in dark mode (override system settings)
+        document.documentElement.classList.add('dark');
+
+        // Store the preference
+        localStorage.setItem('darkMode', 'enabled');
+
+        // Toggle functionality
+        const darkModeToggle = $('darkModeToggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+            });
+        }
+    }
+
+    // Enter key submit functionality
+    function initEnterKeySubmit() {
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+                // Prevent default only if we're not in a textarea or if it's a submit button
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.tagName !== 'TEXTAREA') {
+                    event.preventDefault();
+                    const submitBtn = $('submitBtn');
+                    if (submitBtn && !submitBtn.disabled) {
+                        submitBtn.click();
+                    }
+                }
+            }
+        });
+    }
+
     function setLoading(loading, message = "") {
         const btns = [$("submitBtn"), $("nextBtn")];
         btns.forEach(b => b.disabled = loading ? true : b.id === "nextBtn" ? $("nextBtn").disabled : false);
@@ -37,12 +73,21 @@
     }
 
     async function fetchEdges({ company, type, skip, first }) {
-
+        // Handle "ALL" case - send empty array for tagSlugs
+        let tagSlugs;
+        if (type === "ALL" || type.includes("ALL")) {
+            tagSlugs = [];
+        } else {
+            tagSlugs = type.split(",").map(aa => aa.trim());
+        }
 
         let v = {
-            "orderBy": "MOST_RECENT", "keywords": company.split(",").map(aa => aa.trim()), "tagSlugs": type.split(",").map(aa => aa.trim()), "skip": skip, "first": first
+            "orderBy": "MOST_RECENT",
+            "keywords": company.split(",").map(aa => aa.trim()),
+            "tagSlugs": tagSlugs,
+            "skip": skip,
+            "first": first
         }
-        console.log("Variables", v);
         const nr = await fetch("https://lokesh-lc.lokeshsekar005.workers.dev/api?a=1", {
             headers: {
                 accept: "application/json"
@@ -132,6 +177,11 @@
 
     // Wire up UI
     window.addEventListener("DOMContentLoaded", () => {
+        // Initialize all functionality
+        initDarkMode();
+        initEnterKeySubmit();
+
+        // Original event listeners
         $("submitBtn").addEventListener("click", () => doFetchPage({ reset: true }));
         $("nextBtn").addEventListener("click", nextPage);
     });
